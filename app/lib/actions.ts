@@ -1,11 +1,13 @@
 'use server';
 
 import { z } from 'zod';
-import { sql } from '@vercel/postgres';
+import { PrismaClient } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+
+const prisma = new PrismaClient()
 
 const FormSchema = z.object({
   id: z.string(),
@@ -15,7 +17,7 @@ const FormSchema = z.object({
   amount: z.coerce
     .number()
     .gt(0, { message: 'Please enter an amount greater than $0.' }),
-  status: z.enum(['pending', 'paid'], {
+  status: z.enum(['Pending', 'Paid'], {
     invalid_type_error: 'Please select an invoice status.',
   }),
   date: z.string(),
@@ -56,10 +58,14 @@ export async function createInvoice(prevState: State, formData: FormData) {
 
   // Insert data into the database
   try {
-    await sql`
-      INSERT INTO invoices (customer_id, amount, status, date)
-      VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-    `;
+    await prisma.invoices.create({
+      data: {
+        customerId: customerId,
+        amount: amountInCents,
+        status: status,
+        date: date
+      }
+    });
   } catch (error) {
     // If a database error occurs, return a more specific error.
     return {
@@ -94,11 +100,14 @@ export async function updateInvoice(
   const amountInCents = amount * 100;
 
   try {
-    await sql`
-      UPDATE invoices
-      SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-      WHERE id = ${id}
-    `;
+    await prisma.invoices.update({
+      where: { id: id },
+      data: {
+        customerId: customerId,
+        amount: amountInCents,
+        status: status
+      }
+    });
   } catch (error) {
     return { message: 'Database Error: Failed to Update Invoice.' };
   }
@@ -109,7 +118,9 @@ export async function updateInvoice(
 
 export async function deleteInvoice(id: string) {
   try {
-    await sql`DELETE FROM invoices WHERE id = ${id}`;
+    await prisma.invoices.delete({
+      where: { id: id }
+    });
     revalidatePath('/dashboard/invoices');
     return { message: 'Deleted Invoice.' };
   } catch (err) {
