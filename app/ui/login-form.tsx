@@ -72,9 +72,8 @@ export default function LoginForm() {
             </div>
             <div className="relative">
               <input
-                className="peer block hidden w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="newUser"
-                type="newUser"
+                type="hidden"
                 name="newUser"
                 value="false"
                 onChange={(e) => e.preventDefault()}
