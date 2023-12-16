@@ -6,8 +6,10 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import type { User } from '@/app/lib/definitions';
+import * as argon from 'argon2';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 const FormSchema = z.object({
   id: z.string(),
@@ -63,8 +65,8 @@ export async function createInvoice(prevState: State, formData: FormData) {
         customerId: customerId,
         amount: amountInCents,
         status: status,
-        date: date
-      }
+        date: date,
+      },
     });
   } catch (error) {
     // If a database error occurs, return a more specific error.
@@ -105,8 +107,8 @@ export async function updateInvoice(
       data: {
         customerId: customerId,
         amount: amountInCents,
-        status: status
-      }
+        status: status,
+      },
     });
   } catch (error) {
     return { message: 'Database Error: Failed to Update Invoice.' };
@@ -119,7 +121,7 @@ export async function updateInvoice(
 export async function deleteInvoice(id: string) {
   try {
     await prisma.invoices.delete({
-      where: { id: id }
+      where: { id: id },
     });
     revalidatePath('/dashboard/invoices');
     return { message: 'Deleted Invoice.' };

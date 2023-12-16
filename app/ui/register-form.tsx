@@ -12,24 +12,24 @@ import { useFormState, useFormStatus } from 'react-dom';
 import { authenticate } from '@/app/lib/actions';
 import Link from 'next/link';
 
-function LoginButton() {
+function RegisterButton() {
   const { pending } = useFormStatus();
 
   return (
     <Button className="mt-4 w-full" aria-disabled={pending}>
-      Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+      Register <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </Button>
   );
 }
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
 
   return (
     <form action={dispatch} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
         <h1 className={`${lusitana.className} mb-3 text-2xl`}>
-          Please log in to continue.
+          Please register to continue.
         </h1>
         <div className="w-full">
           <div>
@@ -76,19 +76,20 @@ export default function LoginForm() {
                 id="newUser"
                 type="newUser"
                 name="newUser"
-                value="false"
+                value="true"
                 onChange={(e) => e.preventDefault()}
               />
             </div>
           </div>
         </div>
-        <LoginButton />
+        <RegisterButton />
         <div
           style={{
             color: 'GrayText',
           }}
         >
-          Have not registered yet <Link href="/register">register?</Link>
+          Already registered
+          <Link href="/login"> sign in?</Link>
         </div>
         <div
           className="flex h-8 items-end space-x-1"
@@ -98,7 +99,7 @@ export default function LoginForm() {
           {errorMessage && (
             <>
               <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">{errorMessage}</p>
+              <p className="text-sm text-red-500">User already exists</p>
             </>
           )}
         </div>

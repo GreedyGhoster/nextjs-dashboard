@@ -1,3 +1,5 @@
+'use server';
+
 import { sql } from '@vercel/postgres';
 import { PrismaClient } from '@prisma/client';
 import { CustomersTableType, User } from './definitions';
@@ -12,7 +14,7 @@ export async function fetchRevenue() {
 
   try {
     console.log('Fetching revenue data...');
-    await new Promise((resolve) => setTimeout(resolve, 2220));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const data = await prisma.revenue.findMany();
 
