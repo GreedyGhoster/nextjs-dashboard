@@ -44,19 +44,24 @@ export const { auth, signIn, signOut } = NextAuth({
 
             if (passwordsMatch) return user;
           } else if (newUser === 'true') {
-            console.log('Creating new user');
+            try {
+              console.log('Creating new user');
 
-            const hashedPassword = await argon.hash(password);
+              const hashedPassword = await argon.hash(password);
 
-            const newUser = await prisma.user.create({
-              data: {
-                email: email,
-                name: email,
-                password: hashedPassword,
-              },
-            });
+              const newUser = await prisma.user.create({
+                data: {
+                  email: email,
+                  name: email,
+                  password: hashedPassword,
+                },
+              });
 
-            return newUser;
+              return newUser;
+            } catch {
+              console.log('Failed to create new user');
+              return null;
+            }
           }
         }
 
