@@ -6,8 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
-import type { User } from '@/app/lib/definitions';
-import * as argon from 'argon2';
+import { formAuthData } from '../interfaces';
 
 const prisma = new PrismaClient();
 
@@ -132,7 +131,7 @@ export async function deleteInvoice(id: string) {
 
 export async function authenticate(
   prevState: string | undefined,
-  formData: FormData,
+  formData: FormData | formAuthData,
 ) {
   try {
     await signIn('credentials', formData);
